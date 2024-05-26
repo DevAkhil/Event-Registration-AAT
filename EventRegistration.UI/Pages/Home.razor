@@ -1,0 +1,90 @@
+﻿@page "/"
+@using EventRegisterstration.Service.Interface
+@using EventRegistration.Application.DTOs.EventRegistration
+@using EventRegistration.Application.DTOs.Events
+@inject IEventService EventService
+@inject IDialogService DialogService
+
+<ModernBanner Heading="Available Events"/>
+<ModernCard MarginTopInPixels="-75">
+
+
+
+@if (events == null)
+{
+        <p>Loading...</p> <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{   
+        <div class="d-flex flex-wrap gap-4  justify-content-center">
+        @foreach (var eventItem in events)
+        {
+                <MudCard Style="width:250px; height:400px" Class="position-relative">
+                    <MudCardMedia Image="@eventItem.EventImgUrl" Height="200"/>
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">@eventItem.EventName</MudText>
+                        <MudText Typo="Typo.body2">@eventItem.EventDescription</MudText>
+                    </MudCardContent>
+                    <div class="position-absolute bottom-0 w-100">
+                    <MudCardActions Class="d-flex justify-content-center align-items-end">
+                    <MudChip Color="Color.Primary" Icon="@Icons.Material.Filled.Chair">@eventItem.AssignedSeats / @eventItem.MaxSeats Seats</MudChip>
+                        @if((eventItem.MaxSeats - eventItem.AssignedSeats) > 0 && !eventItem.IsRegisterd)
+                        {
+                            <MudChip Color="Color.Secondary" OnClick="()=> OpenDialog(eventItem.EventId)">Register</MudChip>
+
+                        }
+                        else if (eventItem.IsRegisterd)
+                        {
+                            <MudChip Color="Color.Surface" OnClick="()=> OpenDialog(eventItem.EventId)">Registerd</MudChip>
+
+                        }
+                        else
+                        {
+                            <MudChip Color="Color.Error">Event Full</MudChip>
+
+                        }
+                    </MudCardActions>
+                    </div>
+                </MudCard>
+        }
+        </div>
+}
+</ModernCard>
+
+@code {
+    private List<ViewEventDTO> events;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetEvents();
+    }
+
+    private async Task GetEvents()
+    {
+        events = null;
+        StateHasChanged();
+        events = await EventService.GetAvailableEventsAsync();
+
+    }
+
+
+    private async void OpenDialog(Guid EventId)
+    {
+        var options = new DialogOptions { DisableBackdropClick = true };
+        var parameters = new DialogParameters<EventRegistrationFormComponent>();
+        parameters.Add(x => x.EventId, EventId);
+        var dialog =   DialogService.Show<EventRegistrationFormComponent>("Register",parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            bool resultBool = bool.TryParse(result.Data.ToString(), out bool addedItem);
+            if (resultBool)
+            {
+                await GetEvents();
+                events.FirstOrDefault(x => x.EventId == EventId)!.IsRegisterd = true;
+                StateHasChanged();
+            } 
+        }
+    }
+}

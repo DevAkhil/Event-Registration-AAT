@@ -1,0 +1,17 @@
+﻿.banner {
+    width: 100%;
+    /*background: linear-gradient(to right, #261353, #3a0647);*/
+    background-color: blue;
+    background-image: url("https://i.ibb.co/x8DVXGC/Graphic-Side.png");
+    padding: 15px 0;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+.text {
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    margin-left: 30px;
+}

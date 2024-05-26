@@ -1,0 +1,77 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+@using EventRegistration.Application.DTOs.EventRegistration
+@inject IEventRegistrationService EventRegistrationService
+
+<MudDialog>
+    <DialogContent>
+
+        @if (outputEventRegistration == null)
+        {
+            <EditForm Model="@createEventRegistrationDTO" OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <MudCardContent>
+                    <MudTextField Label="First name" 
+                                  @bind-Value="createEventRegistrationDTO.FirstName" For="@(() => createEventRegistrationDTO.FirstName)" />
+                    <MudTextField Label="Last name" 
+                                  @bind-Value="createEventRegistrationDTO.LastName" For="@(() => createEventRegistrationDTO.LastName)" />
+                    <MudTextField Label="Email" Class="mt-3"
+                                  @bind-Value="createEventRegistrationDTO.Email" For="@(() => createEventRegistrationDTO.Email)" />
+
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton OnClick="Cancel">Cancel</MudButton>
+
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto">Register</MudButton>
+                </MudCardActions>
+            </EditForm>
+
+        }
+        else
+        {
+            <div class="d-flex align-items-center justify-content-center gap-4">
+
+            @outputEventRegistration.UserFriendlyMessage
+
+            <MudButton Color="Color.Primary" OnClick="Submit">Confirm</MudButton>
+            </div>
+
+
+        }
+    </DialogContent>
+
+</MudDialog>
+
+@code {
+    CreateEventRegistrationDTO createEventRegistrationDTO { get; set; } = new CreateEventRegistrationDTO();
+    OutputEventRegistrationDTO? outputEventRegistration { get; set; } = null;
+
+    [CascadingParameter] 
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] 
+    public Guid EventId { get; set; }
+
+
+
+
+
+
+    void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(outputEventRegistration.IsRegisterd));
+    }
+    void Cancel() => MudDialog.Cancel();
+
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+
+        createEventRegistrationDTO.EventId = EventId;
+        outputEventRegistration = await EventRegistrationService.CreateRegistration(createEventRegistrationDTO);
+        StateHasChanged();
+
+    }
+
+
+}

@@ -1,0 +1,10 @@
+﻿.example-content {
+    width: 100%;
+    min-height: 100px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 4px 10px 14px 0px rgba(0,0,0,0.22);
+    -webkit-box-shadow: 4px 10px 14px 0px rgba(0,0,0,0.22);
+    -moz-box-shadow: 4px 10px 14px 0px rgba(0,0,0,0.22);
+    padding: 15px;
+}

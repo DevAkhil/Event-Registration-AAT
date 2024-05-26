@@ -1,0 +1,16 @@
+﻿    
+<div class="example-content @(Class)" style="@("margin-top:" + MarginTopInPixels + "px; margin-bottom:" + MarginBottomInPixels + "px;")">
+    @ChildContent
+
+</div>
+
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public int MarginTopInPixels { get; set; } = -50;
+    [Parameter]
+    public int MarginBottomInPixels { get; set; } = 25;
+    [Parameter]
+    public string Class { get; set; } = "";
+}

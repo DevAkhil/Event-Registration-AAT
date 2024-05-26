@@ -1,0 +1,32 @@
+﻿@inject IEventService EventService
+
+<MudDialog>
+    <DialogContent>
+        <MudText>Do you really want to delete event @EventName ? This process cannot be undone.</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="OnValidSubmit">Delete</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public Guid DeleteEventGuid{ get; set; }
+    [Parameter]
+    public string EventName { get; set; } = string.Empty;
+
+    void Cancel() => MudDialog.Cancel();
+
+            private async void OnValidSubmit()
+            {
+                await EventService.DeleteEventAsync((Guid)DeleteEventGuid);
+
+
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+
+
+
+}

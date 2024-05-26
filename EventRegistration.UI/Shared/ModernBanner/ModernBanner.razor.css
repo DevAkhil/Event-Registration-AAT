@@ -1,0 +1,39 @@
+﻿.modern-banner {
+    width: calc(100% + 2rem + 1.5rem);
+    height: 200px;
+    background-color: blue;
+    background-image: url("https://i.ibb.co/qNTkd3L/vector-JUL-2020-87.jpg");
+    margin-left: -2rem;
+    margin-right: -1.5rem;
+    margin-top: -1.1rem;
+    border-radius: 0px 0px 15px 15px;
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
+    padding: 25px;
+    padding-top: 35px;
+}
+.background-image {
+    filter: grayscale(100%) brightness(0.6) sepia(100%) hue-rotate(270deg);
+}
+
+
+.banner-content{
+    width:100%;
+    height:100%;
+
+}
+.text {
+    color: white;
+    margin: 0px;
+    padding: 0px;
+}
+
+.subheading{
+    margin-top:5px;
+    font-size:23px;
+
+
+}
+
+

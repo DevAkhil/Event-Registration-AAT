@@ -1,0 +1,67 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+@using EventRegistration.Application.DTOs.EventRegistration
+@using EventRegistration.Application.DTOs.Events
+@inject IEventService EventService
+
+<MudDialog>
+    <DialogContent>
+
+            <EditForm Model="@createUpdateEventDTO" OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <MudCardContent>
+                    <MudTextField Label="Event name" 
+                                  @bind-Value="createUpdateEventDTO.EventName" For="@(() => createUpdateEventDTO.EventName)" />
+                    <MudTextField Label="Event description" 
+                                  @bind-Value="createUpdateEventDTO.EventDescription" For="@(() => createUpdateEventDTO.EventDescription)" />
+                    <MudTextField Label="Image Url" Class="mt-3"
+                                  @bind-Value="createUpdateEventDTO.EventImgUrl" For="@(() => createUpdateEventDTO.EventImgUrl)" />
+                    <MudTextField Label="Max seats" Class="mt-3"
+                                  @bind-Value="createUpdateEventDTO.MaxSeats" For="@(() => createUpdateEventDTO.MaxSeats)" />
+
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton OnClick="Cancel">Cancel</MudButton>
+
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto">@(ExistingEventId != null ? "Update" : "Create")</MudButton>
+                </MudCardActions>
+            </EditForm>
+
+
+    </DialogContent>
+
+</MudDialog>
+
+@code {
+
+    [Parameter]
+    public CreateUpdateEventDTO createUpdateEventDTO { get; set; } = new CreateUpdateEventDTO();
+
+    [Parameter]
+    public Guid? ExistingEventId { get; set; }
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+
+
+    void Cancel() => MudDialog.Cancel();
+
+
+    private  async void OnValidSubmit(EditContext context)
+    {
+        if(ExistingEventId == null)
+        {
+            await EventService.CreateEventAsync(createUpdateEventDTO);
+        }
+        else 
+        {
+            await EventService.UpdateEventAsync((Guid)ExistingEventId,createUpdateEventDTO);
+
+        }
+
+         MudDialog.Close(DialogResult.Ok(true));
+    }
+
+
+}

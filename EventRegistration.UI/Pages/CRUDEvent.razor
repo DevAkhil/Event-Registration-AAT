@@ -1,0 +1,114 @@
+﻿@page "/edit"
+
+@using System.Net.Http.Json
+@using EventRegistration.Application.DTOs.Events
+@using EventRegistration.UI.Features.CreateEditEventForm
+@using EventRegistration.UI.Features.DeleteEventComponent
+@inject IDialogService DialogService
+
+
+
+@inject IEventService EventService
+
+
+    <ModernBanner Heading="Edit Events"></ModernBanner>
+
+
+<ModernCard>
+    <div class="mb-3 w-100">
+  <MudButton Variant="Variant.Filled" Class="w-100" Color="Color.Primary" OnClick="()=>OpenDialog(null)">Add Event</MudButton>
+    </div>
+
+<MudDataGrid T="GetEventDTO" Items="@Events"  EditMode="@DataGridEditMode.Form"
+           
+             Bordered="true" Dense="true" >
+    <Columns>
+        <PropertyColumn Title="Event Name" Property="x => x.EventName"   />
+            <PropertyColumn  Title="Description" Property="x => x.EventDescription" />
+            <PropertyColumn Title="Image URL"  Property="x => x.EventImgUrl" />
+            <PropertyColumn Title="Max Seats" Property="x => x.MaxSeats">
+         
+        </PropertyColumn>
+        <TemplateColumn >
+            <CellTemplate>
+                @{
+                    var eventItem  = (context as CellContext<GetEventDTO>).Item;
+                }
+                    <MudIconButton Size="@Size.Small" Color="Color.Secondary" Icon="@Icons.Material.Outlined.Edit" OnClick="()=> OpenDialog(eventItem)" />
+                    <MudIconButton Size="@Size.Small" Color="Color.Error" Icon="@Icons.Material.Outlined.Delete" OnClick="()=> OpenDeleteDialog(eventItem)" />
+            </CellTemplate>
+        </TemplateColumn>
+      
+    </Columns>
+</MudDataGrid>
+</ModernCard>
+
+@code {
+    private List<GetEventDTO> Events = new List<GetEventDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetEvents();
+    }
+
+    private async Task GetEvents()
+    {
+        Events = await EventService.GetAllEventsAsync();
+
+    }
+
+    private async void OpenDialog(GetEventDTO? input)
+    {
+        var options = new DialogOptions { DisableBackdropClick = true, FullWidth=true };
+        var parameters = new DialogParameters<CreateEditEventFormComponent>();
+        string formText = string.Empty;
+        if(input != null)
+        {
+            parameters.Add(x => x.createUpdateEventDTO, input);
+            parameters.Add(x => x.ExistingEventId, input.EventId);
+            formText = $"Update {input.EventName}";
+        }
+        else
+        {
+            formText = "Create Event";
+        }
+        var dialog = DialogService.Show<CreateEditEventFormComponent>(formText, parameters, options);
+
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            bool resultBool = bool.TryParse(result.Data.ToString(), out bool addedItem);
+            if (resultBool)
+            {
+                await GetEvents();
+                StateHasChanged();
+            }
+        }
+    }
+
+
+    private async void OpenDeleteDialog(GetEventDTO? input)
+    {
+        var options = new DialogOptions { DisableBackdropClick = true, FullWidth = true };
+        var parameters = new DialogParameters<DeleteEventComponent>();
+      
+            parameters.Add(x => x.DeleteEventGuid, input.EventId);
+            parameters.Add(x => x.EventName, input.EventName);
+
+        var dialog = DialogService.Show<DeleteEventComponent>("Delete", parameters, options);
+
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            bool resultBool = bool.TryParse(result.Data.ToString(), out bool addedItem);
+            if (resultBool)
+            {
+                await GetEvents();
+                StateHasChanged();
+            }
+        }
+    }
+
+}
