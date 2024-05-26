@@ -1,6 +1,5 @@
 # Event Registration App
 
-[![Watch the video](https://img.youtube.com/vi/jsLw8YR6tSE/0.jpg)](https://www.youtube.com/watch?v=jsLw8YR6tSE)
 
 ## Overview
 
